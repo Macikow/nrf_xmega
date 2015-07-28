@@ -138,6 +138,9 @@
     <Compile Include="uart\uart.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="uart\vt100.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="uart" />

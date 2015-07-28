@@ -19,19 +19,18 @@
 #define IRQ PIN0_bp
 #define CE	PIN1_bp
 
-#define CE_HIGH ( CE_PORT.OUTSET |= (1<<CE))
-#define CE_LOW	( CE_PORT.OUTCLR |= (1<<CE))
+
 
 
 unsigned char payload_len;
 
 
-void ceSet(void){
-	CE_HIGH;
+void ce_High(void){
+	CE_PORT.OUTSET =  (1 << CE);
 }
 
-void ceClr(void){
-	CE_LOW;
+void ce_Low(void){
+	CE_PORT.OUTCLR =  (1 << CE);
 }
 
 
@@ -40,10 +39,10 @@ void ceClr(void){
 void nrf24_ce_digitalWrite(unsigned char status){
 	switch(status){
 		
-		case HIGH:	ceSet();
+		case HIGH:	ce_High();
 		break;
 		
-		case LOW:	ceClr();
+		case LOW:	ce_Low();
 		break;
 	}
 }
