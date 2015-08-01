@@ -67,6 +67,20 @@ unsigned char nrf24_readSingleRegister(unsigned char reg);
 void nrf24_writeSingleRegister(unsigned char reg, unsigned char val);
 
 
+// funkcja sprawdzaj¹ca dzia³anie pól bitowych
+void readCONFIG(void);
+void readEN_AA(void);
+void readEN_RX_ADDR(void);
+void readSETUP_AW(void);
+void readSETUP_RETR(void);				
+void readRF_CH(void);
+void readRF_SETUP(void);
+void readSTATUS(void);
+void readOBSERVE_TX(void);
+void readRPD(void);
+
+
+
 
 
 #endif /* NRF24_H_ */

@@ -9,6 +9,8 @@
 #include "../spi/spi.h"
 #include <stdio.h>
 #include "../main.h"
+#include "nrf_reg_struct.h"
+#include "util/delay.h"
 
 
 /************************************************************************/
@@ -24,6 +26,104 @@
 
 unsigned char payload_len;
 
+
+
+
+void readCONFIG(void){
+	refreshRegsterData();
+	if(NRF_R_CONFIG->PRIM_RX_R) printf("\tPRIM_RX is set\n");													/*0*/
+	if(NRF_R_CONFIG->PWR_UP_R) printf("\tPWR_UP is set\n");														/*1*/
+	if(NRF_R_CONFIG->CRCO_R == 0)printf("\tCRC 1 byte\n");	else  printf("CRC 2 bytes");						/*2*/			
+	if(NRF_R_CONFIG->EN_CRC_R) printf("\tCRC enabled\n");														/*3*/
+	if(NRF_R_CONFIG->MASK_MAX_RT_R) printf("\titerrupt when send max number of retransmit (enabled)\n");		/*4*/
+	if(NRF_R_CONFIG->MASK_TX_DS_R) printf("\tinterrupt when TX data send (enabled)\n");							/*5*/
+	if(NRF_R_CONFIG->MASK_RX_DS_R) printf("\tinterrupt when RX data received (enabled)\n");						/*6*/
+}
+void readEN_AA(void){
+	
+	refreshRegsterData();
+	printf("EN_AA - Enable Ack\n");
+	if(NRF_R_EN_AA->ENAA_P0_R) printf("\tEnable Ack pipe 0\n");													/*0*/
+	if(NRF_R_EN_AA->ENAA_P1_R) printf("\tEnable Ack pipe 1\n");														/*1*/
+	if(NRF_R_EN_AA->ENAA_P2_R)printf("\tEnable Ack pipe 2\n");	else  printf("CRC 2 bytes");						/*2*/
+	if(NRF_R_EN_AA->ENAA_P3_R) printf("\tEnable Ack pipe 3\n");														/*3*/
+	if(NRF_R_EN_AA->ENAA_P4_R) printf("\tEnable Ack pipe 4\n");		/*4*/
+	if(NRF_R_EN_AA->ENAA_P5_R) printf("\tEnable Ack pipe 5\n");							/*5*/
+}
+void readEN_RX_ADDR(void){
+	refreshRegsterData();
+	printf("EN_RX_ADDR - Enable RX Address\n");
+	if(NRF_R_EN_RXADDR->ERX_P0_R) printf("\tPRIM_RX is set\n");													/*0*/
+	if(NRF_R_EN_RXADDR->ERX_P1_R) printf("\tPWR_UP is set\n");														/*1*/
+	if(NRF_R_EN_RXADDR->ERX_P2_R)printf("\tCRC 1 byte\n");	else  printf("CRC 2 bytes");						/*2*/
+	if(NRF_R_EN_RXADDR->ERX_P3_R) printf("\tCRC enabled\n");														/*3*/
+	if(NRF_R_EN_RXADDR->ERX_P4_R) printf("\titerrupt when send max number of retransmit (enabled)\n");		/*4*/
+	if(NRF_R_EN_RXADDR->ERX_P5_R) printf("\tinterrupt when TX data send (enabled)\n");							/*5*/
+}
+void readSETUP_AW(void){
+	refreshRegsterData();
+	printf("SETUP_AW - Setup of Addres Widths\n");
+	if(NRF_R_SETUP_AW->AW_R == 0x03) printf("\tRX/TX address field widths - 5B \n");
+	else if(NRF_R_SETUP_AW->AW_R == 0x02) printf("\tRX/TX address field widths - 4B \n");
+	else if(NRF_R_SETUP_AW->AW_R == 0x01) printf("\tRX/TX address field widths - 3B \n");
+	else printf("\tRX/TX address field widths - illegal \n");							/*0*/
+
+
+}
+void readSETUP_RETR(void){
+	refreshRegsterData();
+	printf("SETUP_RETR - Setup of automatic retransmission \n");
+	printf("\tRetransmission delay : %.0f us\n", (250 * NRF_R_SETUP_RETR->ADR_R) );										/*0*/
+	printf("\tRetransmission Count : %d \n", NRF_R_SETUP_RETR->ARC_R );														/*5*/
+}
+
+void readRF_CH(void){
+	refreshRegsterData();
+	printf("RF_CH - RF Channel \n");
+	printf("\tRF Chanell :  %d \n", NRF_R_RF_CH->RF_CH_R);														/*5*/
+}
+void readRF_SETUP(void){
+	refreshRegsterData();
+	printf("RF_SETUP- RF Setup Register\n");
+	if(NRF_R_RF_SETUP->RF_PWR_R == 0x00 ) printf("\tRF Poer = -18dBm\n");	
+	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x01 ) printf("\tRF Poer = -12dBm\n");		
+	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x02 ) printf("\tRF Poer = -6dBm\n");		
+	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x03 ) printf("\tRF Poer = -0dBm\n");														/*0*/
+	if(NRF_R_RF_SETUP->RF_DR_R == 0 ) printf("\tdata rates speed : 1Mbps\n");
+	else if(NRF_R_RF_SETUP->RF_DR_R == 0x01 ) printf("\tdata rates speed : 2Mbps\n");	
+	else if(NRF_R_RF_SETUP->RF_DR_R == 0x02 ) printf("\tdata rates speed : 250kbps\n");	
+	else if(NRF_R_RF_SETUP->RF_DR_R == 0x03 ) printf("\tdata rates speed : reserved\n");
+	if(NRF_R_RF_SETUP->RF_DR_L_R ) printf("\tdata rates speed : 250kbps\n");	
+	if(NRF_R_RF_SETUP->CONT_WAVE) printf("\tContinous Carrier transmit \n");									/*1									/*5*/
+}
+void readSTATUS(void){
+	refreshRegsterData();
+	printf("STATUS- Status Regoster\n");
+	if(NRF_R_STATUS->TX_FULL_R) printf("\tTX Fifo full flag\n");													/*0*/
+	if(NRF_R_STATUS->RX_P_NO_R == 7) printf("\tRX Fifo empty\n");
+	else if(NRF_R_STATUS->RX_P_NO_R == 6) printf("\tNot used\n");
+	else printf("\tRX Fifo number  %d payload available for reading\n",NRF_R_STATUS->RX_P_NO_R);								/*1*/
+	if(NRF_R_STATUS->MAX_RX_R) printf("\tMaximum number of TX retransmits interrupt\n");						/*2*/
+	if(NRF_R_STATUS->TX_DS_R) printf("\tData send TX FIFO iterrupt\n");														/*3*/
+	if(NRF_R_STATUS->RX_DR_R) printf("\tData ready RX FIFO interrupt\n");		/*4*/					/*5*/
+}
+void readOBSERVE_TX(void){
+	refreshRegsterData();
+	printf("OBSERVE_TX - Transmit observe register\n");
+	printf("\tCount lost packets :%d\n",NRF_R_OBSERVE_TX->PLOS_CNT_R);
+	printf("\tCount retransmitted packets :%d\n",NRF_R_OBSERVE_TX->ARC_CNT_R);														/*0*/	/*4*/					/*5*/
+}
+void readRPD(void){
+	refreshRegsterData();
+	printf("RPD - Recieved power detector\n");
+	if(NRF_R_RPD->RPD_R)	printf("\tCurrier Detect\n");	
+	else printf("\tCurrier not Detect\n");														/*0*/	/*4*/					/*5*/
+}
+
+
+void refreshRegsterData(void){
+	nrf24_readAllReg();
+}
 
 void ce_High(void){
 	CE_PORT.OUTSET =  (1 << CE);
@@ -119,9 +219,10 @@ void nrf24_config(unsigned char channel, unsigned char pay_length)
 //#if DEBUG
 	printf("ustawienia rejestrów :\n");
 	//nrf24_readRegisters(0x00,&register_table ,29);
-	for(unsigned char i=0;i<0x1d;i++){
-		printf("register[%d] = 0x%x \n",i,nrf24_readSingleRegister(i));
-	}
+	//for(unsigned char i=0;i<0x1d;i++){
+	//	nrf_Registers_table[i] = nrf24_readSingleRegister(i);
+	//	printf("register[%d] = 0x%x \n",i,nrf_Registers_table[i]);
+	//}
 	
 //#endif
 
@@ -438,6 +539,28 @@ unsigned char nrf24_readSingleRegister(unsigned char reg)
 	nrf24_csn_digitalWrite(HIGH);
 	return readData;
 }
+void nrf24_readAllReg(unsigned char* table){
+	nrf24_csn_digitalWrite(LOW);
+	spi_Transmit(R_REGISTER | (REGISTER_MASK & 0x00));
+	for(unsigned char i=0;i<0x09;i++){
+		*(nrf_Registers_table+i) = spi_Transmit(NOP);
+	}
+	nrf24_csn_digitalWrite(HIGH);
+	_delay_us(30);
+	nrf24_csn_digitalWrite(LOW);
+	spi_Transmit(R_REGISTER | (REGISTER_MASK & 0x11));
+	for(unsigned char i=10;i<0x16;i++){
+		*(nrf_Registers_table+i) = spi_Transmit(NOP);
+	}
+	nrf24_csn_digitalWrite(HIGH);
+	_delay_us(30);
+	nrf24_csn_digitalWrite(LOW);
+	spi_Transmit(R_REGISTER | (REGISTER_MASK & 0x1C));
+	for(unsigned char i=17;i<0x18;i++){
+		*(nrf_Registers_table+i) = spi_Transmit(NOP);
+	}
+	nrf24_csn_digitalWrite(HIGH);
+}
 
 void nrf24_transferRead(unsigned char* datain,unsigned char len)
 {
@@ -449,7 +572,6 @@ void nrf24_transferRead(unsigned char* datain,unsigned char len)
 		datain[i] = spi_Transmit(0xff);
 		printf("%d : %d\n",i,datain[i]);	
 	}
-
 }
 
 void nrf24_readRegisters(unsigned char reg, unsigned char* val, unsigned char len)

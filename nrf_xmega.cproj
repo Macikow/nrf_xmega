@@ -123,6 +123,9 @@
     <Compile Include="nrf2410\nrf24l01h.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="nrf2410\nrf_reg_struct.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="nrf_xmega.c">
       <SubType>compile</SubType>
     </Compile>

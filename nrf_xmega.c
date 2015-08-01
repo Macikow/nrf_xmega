@@ -47,19 +47,19 @@ int main(void)
 	stdout = &mystdout;
 	sei();
 	printf(ERASE_SCREEN);
-	nrf24_init();
-	
-	nrf24_config(2, 3);
-	CSN_Low();
-	spi_Transmit(0x00);
-	CSN_High();
-	CSN_Low();
-	spi_Transmit(0x32);
-	CSN_High();
-	CSN_Low();
-	spi_Transmit(0x17);
-	spi_Transmit(0x64);
-	CSN_High();
+	//readConfig();
+	nrf24_init(); // inicjacja nrf'a
+	nrf24_config(2, 3);	// konfigracja nrf'a
+	readCONFIG();
+	readEN_AA( );
+	readEN_RX_ADDR( );
+	readSETUP_AW( );
+	readSETUP_RETR( );
+	readRF_CH( );
+	readRF_SETUP( );
+	readSTATUS( );
+	readOBSERVE_TX( );
+	readRPD( );
     while(1)
     {
 		//printf("sdfghjkl");
