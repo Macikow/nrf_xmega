@@ -13,17 +13,20 @@
 	STRUKTURY S£U¯¥ G£ÓWNIE DO ODCZYTYWANIA STANÓW REJETRÓW FUNKCYJNYCH TRANSMITERA nrf w trybie debug b¹dz w innych funkcjonalnosciach rozwojowych
 */
 unsigned char nrf_Registers_table[0x1d]; // tablica z danymi z refjerór nrf'a
+unsigned char RX_Address_P0[5];
+unsigned char RX_Address_P1[5];
+unsigned char RX_Address_P2_P5[4];
 
 #define NRF_R_CONFIG		((struct REG_CONFIG *)			(&nrf_Registers_table[0])) //0x00
 #define NRF_R_EN_AA			((struct REG_EN_AA *)			(&nrf_Registers_table[1])) //0x01
-#define NRF_R_SETUP_AW		((struct REG_SETUP_AW *)		(&nrf_Registers_table[2])) //0x02
-#define NRF_R_SETUP_RETR	((struct REG_SETUP_RETR *)		(&nrf_Registers_table[3])) //0x03
-#define NRF_R_RF_CH			((struct REG_RF_CH *)			(&nrf_Registers_table[4])) //0x04
-#define NRF_R_RF_SETUP		((struct REG_RF_SETUP *)		(&nrf_Registers_table[5])) //0x05
-#define NRF_R_STATUS		((struct REG_STATUS *)			(&nrf_Registers_table[6])) //0x06
-#define NRF_R_OBSERVE_TX	((struct REG_OBSERVE_TX *)		(&nrf_Registers_table[7])) //0x07
-#define NRF_R_RPD			((struct REG_RPD *)				(&nrf_Registers_table[8])) //0x08
-#define NRF_R_EN_RXADDR		((struct REG_EN_RXADDR *)		(&nrf_Registers_table[9])) //0x09
+#define NRF_R_EN_RXADDR		((struct REG_EN_RXADDR *)		(&nrf_Registers_table[2])) //0x02	
+#define NRF_R_SETUP_AW		((struct REG_SETUP_AW *)		(&nrf_Registers_table[3])) //0x03
+#define NRF_R_SETUP_RETR	((struct REG_SETUP_RETR *)		(&nrf_Registers_table[4])) //0x04
+#define NRF_R_RF_CH			((struct REG_RF_CH *)			(&nrf_Registers_table[5])) //0x05
+#define NRF_R_RF_SETUP		((struct REG_RF_SETUP *)		(&nrf_Registers_table[6])) //0x06
+#define NRF_R_STATUS		((struct REG_STATUS *)			(&nrf_Registers_table[7])) //0x07
+#define NRF_R_OBSERVE_TX	((struct REG_OBSERVE_TX *)		(&nrf_Registers_table[8])) //0x08
+#define NRF_R_RPD			((struct REG_RPD *)				(&nrf_Registers_table[9])) //0x09
 // adresy RX, TX 0x0A - 0x10
 #define NRF_R_RX_PW_P0 		((struct REG_RX_PW_P0 *)		(&nrf_Registers_table[10])) //0x11
 #define NRF_R_RX_PW_P1 		((struct REG_RX_PW_P1 *)		(&nrf_Registers_table[11])) //0x12
@@ -35,6 +38,15 @@ unsigned char nrf_Registers_table[0x1d]; // tablica z danymi z refjerór nrf'a
 // rejestry funkcyjne transmitera 0x18 - 0x1B
 #define NRF_R_DYN_PD		((struct REG_DYN_PD *)			(&nrf_Registers_table[17])) //0x1C
 #define NRF_R_FEATURE		((struct REG_FEATURE *)			(&nrf_Registers_table[18])) //0x1D
+/************************************************************************/
+/* Adresy odbiorcze                                                                     */
+/************************************************************************/
+#define NRF_R_RX_ADDR_P0 ((struct REG_RX_ADDR_P0 *)		(&RX_Address_P0[0]))
+#define NRF_R_RX_ADDR_P1 ((struct REG_RX_ADDR_P1 *)		(&RX_Address_P1[0]))
+#define NRF_R_RX_ADDR_P2 ((struct REG_RX_ADDR_P2 *)		(&RX_Address_P2_P5[0]))
+#define NRF_R_RX_ADDR_P3 ((struct REG_RX_ADDR_P3 *)		(&RX_Address_P2_P5[1]))
+#define NRF_R_RX_ADDR_P4 ((struct REG_RX_ADDR_P4 *)		(&RX_Address_P2_P5[2]))
+#define NRF_R_RX_ADDR_P5 ((struct REG_RX_ADDR_P5 *)		(&RX_Address_P2_P5[3]))
 
 
 struct REG_CONFIG {
@@ -101,35 +113,46 @@ struct REG_RPD{
 	unsigned RPD_R			:1;/*0 Currier detect*/
 };
 
-struct REG_RX_ADDR{
-	unsigned char RX_ADDR_P0_R[5];
-	unsigned char RX_ADDR_P1_R[5];
-	unsigned char RX_ADDR_P2_R;
-	unsigned char RX_ADDR_P3_R;
-	unsigned char RX_ADDR_P4_R;
-	unsigned char RX_ADDR_P5_R;
+
+struct REG_RX_ADDR_P0{
+	unsigned char TX_ADDR_P0_R[5];
 };
-struct REG_TX_ADDR{
-	unsigned char TX_ADDR_R[5];
+struct REG_RX_ADDR_P1{
+	unsigned char TX_ADDR_P1_R[5];
 };
+struct REG_RX_ADDR_P2{
+	unsigned  RX_ADDR_P2_R :8;
+};
+struct REG_RX_ADDR_P3{
+	unsigned  RX_ADDR_P3_R :8;
+};
+struct REG_RX_ADDR_P4{
+	unsigned  RX_ADDR_P4_R :8;
+};
+struct REG_RX_ADDR_P5{
+	unsigned  RX_ADDR_P5_R :8;
+};
+
+
 struct REG_RX_PW_P0{
-	unsigned RX_PW_P0_R;
+	unsigned char RX_PW_P0_R ;
 };
 struct REG_RX_PW_P1{
-	unsigned RX_PW_P1_R;
+	unsigned char RX_PW_P1_R ;
 };
 struct REG_RX_PW_P2{
-	unsigned RX_PW_P2_R;
+	unsigned char RX_PW_P2_R ;
 };
 struct REG_RX_PW_P3{
-	unsigned RX_PW_P3_R;
+	unsigned char RX_PW_P3_R ;
 };
 struct REG_RX_PW_P4{
-	unsigned RX_PW_P4_R;
+	unsigned char RX_PW_P4_R ;
 };
 struct REG_RX_PW_P5{
-	unsigned RX_PW_P5_R;
+	unsigned char RX_PW_P5_R ;
 };
+
 struct REG_FIFO_STATUS {
 	unsigned RX_EMPTY_R		:1;/*0*/
 	unsigned RX_FULL_R		:1;/*1*/

@@ -11,6 +11,7 @@
 #include "../main.h"
 #include "nrf_reg_struct.h"
 #include "util/delay.h"
+#include "../uart/vt100.h"
 
 
 /************************************************************************/
@@ -31,64 +32,85 @@ unsigned char payload_len;
 
 void readCONFIG(void){
 	refreshRegsterData();
-	if(NRF_R_CONFIG->PRIM_RX_R) printf("\tPRIM_RX is set\n");													/*0*/
-	if(NRF_R_CONFIG->PWR_UP_R) printf("\tPWR_UP is set\n");														/*1*/
-	if(NRF_R_CONFIG->CRCO_R == 0)printf("\tCRC 1 byte\n");	else  printf("CRC 2 bytes");						/*2*/			
-	if(NRF_R_CONFIG->EN_CRC_R) printf("\tCRC enabled\n");														/*3*/
-	if(NRF_R_CONFIG->MASK_MAX_RT_R) printf("\titerrupt when send max number of retransmit (enabled)\n");		/*4*/
-	if(NRF_R_CONFIG->MASK_TX_DS_R) printf("\tinterrupt when TX data send (enabled)\n");							/*5*/
-	if(NRF_R_CONFIG->MASK_RX_DS_R) printf("\tinterrupt when RX data received (enabled)\n");						/*6*/
+	printf(SET_FORE_WHITE);		
+	for(unsigned char i=0;i<18;i++){
+		
+		if(i<10)				printf("tab[0x%x] = 0x%x\n",i,nrf_Registers_table[i]);
+		else if(i>=10 && i<17)	printf("tab[0x%x] = 0x%x\n",i+7,nrf_Registers_table[i]);
+		else					printf("tab[0x%x] = 0x%x\n",i+11,nrf_Registers_table[i]);
+	}
+	printf(SET_BACK_YELLOW);		
+	printf("%sCONFIG - onfiguration register%s\n",SET_FORE_BLACK,SET_BACK_BLACK);
+	if(NRF_R_CONFIG->PRIM_RX_R)		{printf(SET_FORE_BLUE);		printf("\tPRIM_RX is set\n");}	else {printf(SET_FORE_MAGNETA); printf("\tPRIM_RX clear \n");}													/*0*/
+	if(NRF_R_CONFIG->PWR_UP_R)		{printf(SET_FORE_GREEN);	printf("\tPWR_UP is set\n");}														/*1*/
+	if(NRF_R_CONFIG->CRCO_R == 0)	{printf(SET_FORE_WHITE);	printf("\tCRC 1 byte\n");}		else {printf(SET_FORE_WHITE);  printf("CRC 2 bytes");}						/*2*/			
+	if(NRF_R_CONFIG->EN_CRC_R)		{printf(SET_FORE_GREEN);	printf("\tCRC enabled\n");}														/*3*/
+	if(NRF_R_CONFIG->MASK_MAX_RT_R) {printf(SET_FORE_GREEN);	printf("\titerrupt when send max number of retransmit (enabled)\n");}		/*4*/
+	if(NRF_R_CONFIG->MASK_TX_DS_R)	{printf(SET_FORE_GREEN);	printf("\tinterrupt when TX data send (enabled)\n");}							/*5*/
+	if(NRF_R_CONFIG->MASK_RX_DS_R)	{printf(SET_FORE_GREEN);	printf("\tinterrupt when RX data received (enabled)\n");}
+	printf(SET_FORE_WHITE);						/*6*/
 }
 void readEN_AA(void){
 	
 	refreshRegsterData();
-	printf("EN_AA - Enable Ack\n");
-	if(NRF_R_EN_AA->ENAA_P0_R) printf("\tEnable Ack pipe 0\n");													/*0*/
-	if(NRF_R_EN_AA->ENAA_P1_R) printf("\tEnable Ack pipe 1\n");														/*1*/
-	if(NRF_R_EN_AA->ENAA_P2_R)printf("\tEnable Ack pipe 2\n");	else  printf("CRC 2 bytes");						/*2*/
-	if(NRF_R_EN_AA->ENAA_P3_R) printf("\tEnable Ack pipe 3\n");														/*3*/
-	if(NRF_R_EN_AA->ENAA_P4_R) printf("\tEnable Ack pipe 4\n");		/*4*/
-	if(NRF_R_EN_AA->ENAA_P5_R) printf("\tEnable Ack pipe 5\n");							/*5*/
+	printf(SET_BACK_YELLOW);		
+	printf("%sEN_AA - Enable Ack%s\n",SET_FORE_BLACK,SET_BACK_BLACK);	
+	if(NRF_R_EN_AA->ENAA_P0_R)  {printf(SET_FORE_GREEN); printf("\tEnable Ack pipe 0\n");}													/*0*/
+	if(NRF_R_EN_AA->ENAA_P1_R)	{printf(SET_FORE_GREEN); printf("\tEnable Ack pipe 1\n");}													/*1*/
+	if(NRF_R_EN_AA->ENAA_P2_R)	{printf(SET_FORE_GREEN); printf("\tEnable Ack pipe 2\n");}						/*2*/
+	if(NRF_R_EN_AA->ENAA_P3_R)	{printf(SET_FORE_GREEN); printf("\tEnable Ack pipe 3\n");}														/*3*/
+	if(NRF_R_EN_AA->ENAA_P4_R)	{printf(SET_FORE_GREEN); printf("\tEnable Ack pipe 4\n");}		/*4*/
+	if(NRF_R_EN_AA->ENAA_P5_R)	{printf(SET_FORE_GREEN); printf("\tEnable Ack pipe 5\n");}
+	printf(SET_FORE_WHITE);								/*5*/
 }
 void readEN_RX_ADDR(void){
 	refreshRegsterData();
-	printf("EN_RX_ADDR - Enable RX Address\n");
-	if(NRF_R_EN_RXADDR->ERX_P0_R) printf("\tPRIM_RX is set\n");													/*0*/
-	if(NRF_R_EN_RXADDR->ERX_P1_R) printf("\tPWR_UP is set\n");														/*1*/
-	if(NRF_R_EN_RXADDR->ERX_P2_R)printf("\tCRC 1 byte\n");	else  printf("CRC 2 bytes");						/*2*/
-	if(NRF_R_EN_RXADDR->ERX_P3_R) printf("\tCRC enabled\n");														/*3*/
-	if(NRF_R_EN_RXADDR->ERX_P4_R) printf("\titerrupt when send max number of retransmit (enabled)\n");		/*4*/
-	if(NRF_R_EN_RXADDR->ERX_P5_R) printf("\tinterrupt when TX data send (enabled)\n");							/*5*/
+	printf(SET_BACK_YELLOW);		
+	printf("%sEN_RX_ADDR - Enable RX Address%s\n",SET_FORE_BLACK,SET_BACK_BLACK);	
+	if(NRF_R_EN_RXADDR->ERX_P0_R)	{printf(SET_FORE_GREEN); printf("\tEnable data pipe 0\n");}													/*0*/
+	if(NRF_R_EN_RXADDR->ERX_P1_R)	{printf(SET_FORE_GREEN); printf("\tEnable data pipe 1\n");}													/*1*/
+	if(NRF_R_EN_RXADDR->ERX_P2_R)	{printf(SET_FORE_GREEN); printf("\tEnable data pipe 2\n");	}						/*2*/
+	if(NRF_R_EN_RXADDR->ERX_P3_R)	{printf(SET_FORE_GREEN); printf("\tEnable data pipe 3\n");	}													/*3*/
+	if(NRF_R_EN_RXADDR->ERX_P4_R)	{printf(SET_FORE_GREEN); printf("\Enable data pipe 4\n");}		/*4*/
+	if(NRF_R_EN_RXADDR->ERX_P5_R)	{printf(SET_FORE_GREEN); printf("\tEnable data pipe 5\n");}	
+	printf(SET_FORE_WHITE);		/*5*/
 }
 void readSETUP_AW(void){
 	refreshRegsterData();
-	printf("SETUP_AW - Setup of Addres Widths\n");
+	printf(SET_BACK_YELLOW);		
+	printf("%sSETUP_AW - Setup of Addres Widths%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
 	if(NRF_R_SETUP_AW->AW_R == 0x03) printf("\tRX/TX address field widths - 5B \n");
 	else if(NRF_R_SETUP_AW->AW_R == 0x02) printf("\tRX/TX address field widths - 4B \n");
 	else if(NRF_R_SETUP_AW->AW_R == 0x01) printf("\tRX/TX address field widths - 3B \n");
-	else printf("\tRX/TX address field widths - illegal \n");							/*0*/
+	else printf("\tRX/TX address field widths - illegal \n");							
+	printf(SET_FORE_WHITE);	
 
 
 }
 void readSETUP_RETR(void){
 	refreshRegsterData();
-	printf("SETUP_RETR - Setup of automatic retransmission \n");
-	printf("\tRetransmission delay : %.0f us\n", (250 * NRF_R_SETUP_RETR->ADR_R) );										/*0*/
-	printf("\tRetransmission Count : %d \n", NRF_R_SETUP_RETR->ARC_R );														/*5*/
+	printf(SET_FORE_WHITE);	printf(SET_BACK_YELLOW);		
+	printf("%sSETUP_RETR - Setup of automatic retransmission%s \n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);			
+	printf("\tRetransmission delay : %d * 250 us\n", NRF_R_SETUP_RETR->ADR_R );										/*0*/
+	printf("\tRetransmission Count : %d \n", NRF_R_SETUP_RETR->ARC_R );
+	printf(SET_FORE_WHITE);															/*5*/
 }
 
 void readRF_CH(void){
 	refreshRegsterData();
-	printf("RF_CH - RF Channel \n");
-	printf("\tRF Chanell :  %d \n", NRF_R_RF_CH->RF_CH_R);														/*5*/
+	printf(SET_FORE_WHITE);printf(SET_BACK_YELLOW);		
+	printf("%sRF_CH - RF Channel%s \n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
+	printf("\tRF Chanell :  %d \n", NRF_R_RF_CH->RF_CH_R);
+	printf(SET_FORE_WHITE);															/*5*/
 }
 void readRF_SETUP(void){
 	refreshRegsterData();
-	printf("RF_SETUP- RF Setup Register\n");
+	printf(SET_BACK_YELLOW);	
+	printf("%sRF_SETUP- RF Setup Register%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
 	if(NRF_R_RF_SETUP->RF_PWR_R == 0x00 ) printf("\tRF Poer = -18dBm\n");	
-	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x01 ) printf("\tRF Poer = -12dBm\n");		
-	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x02 ) printf("\tRF Poer = -6dBm\n");		
-	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x03 ) printf("\tRF Poer = -0dBm\n");														/*0*/
+	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x01 ) printf("\tRF Power = -12dBm\n");		
+	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x02 ) printf("\tRF Power = -6dBm\n");		
+	else if(NRF_R_RF_SETUP->RF_PWR_R == 0x03 ) printf("\tRF Power = -0dBm\n");														/*0*/
 	if(NRF_R_RF_SETUP->RF_DR_R == 0 ) printf("\tdata rates speed : 1Mbps\n");
 	else if(NRF_R_RF_SETUP->RF_DR_R == 0x01 ) printf("\tdata rates speed : 2Mbps\n");	
 	else if(NRF_R_RF_SETUP->RF_DR_R == 0x02 ) printf("\tdata rates speed : 250kbps\n");	
@@ -98,7 +120,8 @@ void readRF_SETUP(void){
 }
 void readSTATUS(void){
 	refreshRegsterData();
-	printf("STATUS- Status Regoster\n");
+	printf(SET_BACK_YELLOW);	
+	printf("%sSTATUS- Status Regoster%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
 	if(NRF_R_STATUS->TX_FULL_R) printf("\tTX Fifo full flag\n");													/*0*/
 	if(NRF_R_STATUS->RX_P_NO_R == 7) printf("\tRX Fifo empty\n");
 	else if(NRF_R_STATUS->RX_P_NO_R == 6) printf("\tNot used\n");
@@ -109,17 +132,91 @@ void readSTATUS(void){
 }
 void readOBSERVE_TX(void){
 	refreshRegsterData();
-	printf("OBSERVE_TX - Transmit observe register\n");
+	printf(SET_BACK_YELLOW);	
+	printf("%sOBSERVE_TX - Transmit observe register%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
 	printf("\tCount lost packets :%d\n",NRF_R_OBSERVE_TX->PLOS_CNT_R);
 	printf("\tCount retransmitted packets :%d\n",NRF_R_OBSERVE_TX->ARC_CNT_R);														/*0*/	/*4*/					/*5*/
 }
 void readRPD(void){
 	refreshRegsterData();
-	printf("RPD - Recieved power detector\n");
+	printf(SET_BACK_YELLOW);	
+	printf("%sRPD - Recieved power detector%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
 	if(NRF_R_RPD->RPD_R)	printf("\tCurrier Detect\n");	
 	else printf("\tCurrier not Detect\n");														/*0*/	/*4*/					/*5*/
 }
 
+
+void readRX_ADDR_P0(void){
+	RX_ADDR_P0_tableWrite();
+	printf(SET_BACK_YELLOW);	
+	printf("%sRX_ADDR_P0 - Recive addres data pipe 0%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
+	printf("\tAddress : 0x");
+	for(unsigned char i=0;i<5;i++){
+		printf("%x%x",NRF_R_RX_ADDR_P0->TX_ADDR_P0_R[i]/16,NRF_R_RX_ADDR_P0->TX_ADDR_P0_R[i]%16);
+	}	
+	printf("\n");											/*0*/	/*4*/					/*5*/
+}
+
+void readRX_ADDR_P1(void){
+	RX_ADDR_P1_tableWrite();
+	printf(SET_BACK_YELLOW);	
+	printf("%sRX_ADDR_P1 - Receive address data pipe 1%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
+	printf("\tAddress : 0x");
+	for(unsigned char i=0;i<5;i++){
+		printf("%x%x",NRF_R_RX_ADDR_P1->TX_ADDR_P1_R[i]/16,NRF_R_RX_ADDR_P1->TX_ADDR_P1_R[i]%16);
+	}	
+	printf("\n");															/*0*/	/*4*/					/*5*/
+}
+
+void readRX_ADDR_P2_P5(void){
+	RX_ADDR_P2_P5_tableWrite();
+	printf(SET_BACK_YELLOW);	
+	printf("%sRX_ADDR_P2_P5 - Receive address data pipe 2 - 5 last byte of 5B%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);	
+	printf("\tAddress pipe 2: 0x%x%x\n",NRF_R_RX_ADDR_P2->RX_ADDR_P2_R/16,NRF_R_RX_ADDR_P2->RX_ADDR_P2_R%16);	
+	printf("\tAddress pipe 3: 0x%x%x\n",NRF_R_RX_ADDR_P3->RX_ADDR_P3_R/16,NRF_R_RX_ADDR_P3->RX_ADDR_P3_R%16);	
+	printf("\tAddress pipe 4: 0x%x%x\n",NRF_R_RX_ADDR_P4->RX_ADDR_P4_R/16,NRF_R_RX_ADDR_P4->RX_ADDR_P4_R%16);	
+	printf("\tAddress pipe 5: 0x%x%x\n",NRF_R_RX_ADDR_P5->RX_ADDR_P5_R/16,NRF_R_RX_ADDR_P5->RX_ADDR_P5_R%16);											/*0*/	/*4*/					/*5*/
+}
+
+void read_ALL_RX_PW(void){
+	printf(SET_BACK_YELLOW);
+	printf("%sRX_PW_P0_P5 - Number of bytes in RX payload in all data pipes%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);
+	printf("\tRX_PW_P0",NRF_R_RX_PW_P0->RX_PW_P0_R);
+	printf("\tRX_PW_P1",NRF_R_RX_PW_P1->RX_PW_P1_R);
+	printf("\tRX_PW_P2",NRF_R_RX_PW_P2->RX_PW_P2_R);
+	printf("\tRX_PW_P3",NRF_R_RX_PW_P3->RX_PW_P3_R);
+	printf("\tRX_PW_P4",NRF_R_RX_PW_P4->RX_PW_P4_R);
+	printf("\tRX_PW_P5",NRF_R_RX_PW_P5->RX_PW_P5_R);										/*0*/	/*4*/					/*5*/
+}										/*0*/	/*4*/					/*5*/
+void readFIFO_STATUS(void){
+	printf(SET_BACK_YELLOW);	
+	printf("%sFIFO_STATUS - FIFO status register%s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);		
+	if(NRF_R_FIFO_STATUS->RX_EMPTY_R)		{printf(SET_FORE_RED);		printf("\tRX_FIFO empty\n");}		else {printf(SET_FORE_GREEN); printf("\tRX_FIFO not empty\n");}													/*0*/
+	if(NRF_R_FIFO_STATUS->RX_FULL_R)		{printf(SET_FORE_RED);		printf("\tRX_FIFO full \n");}		else {printf(SET_FORE_GREEN); printf("\tRX_FIFO not full\n");}											/*1*/
+	if(NRF_R_FIFO_STATUS->TX_EMPTY_R)		{printf(SET_FORE_RED);		printf("\tTX_FIFO empty\n");}		else {printf(SET_FORE_GREEN);  printf("\tTX_FIFO not empty");}						/*2*/
+	if(NRF_R_FIFO_STATUS->TX_FULL_R)		{printf(SET_FORE_RED);		printf("\tTX_FIFO full \n");}		else {printf(SET_FORE_GREEN);  printf("\tTX_FIFO not full");}												/*3*/
+	if(NRF_R_FIFO_STATUS->TX_REUSE_R)		printf("do sprawdzenia \n");	/*4*/
+	printf(SET_FORE_WHITE);											/*0*/	/*4*/					/*5*/
+}
+void readDYNPD(void){
+	printf(SET_BACK_YELLOW);
+	printf("%sDYNPD - Dynamic payload data length %s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);
+	if(NRF_R_DYN_PD->DYN_P0_R)		{printf(SET_FORE_GREEN);		printf("\tEnable dynamic data pipe 0 length\n");}		else {printf(SET_FORE_RED); printf("\tDisable dynamic data pipe 0 length\n");}													/*0*/
+	if(NRF_R_DYN_PD->DYN_P1_R)		{printf(SET_FORE_GREEN);		printf("\tEnable dynamic data pipe 1 length\n");}		else {printf(SET_FORE_RED); printf("\tDisable dynamic data pipe 1 length\n");}											/*1*/
+	if(NRF_R_DYN_PD->DYN_P2_R)		{printf(SET_FORE_GREEN);		printf("\tEnable dynamic data pipe 2 length\n");}		else {printf(SET_FORE_RED); printf("\tDisable dynamic data pipe 2 length\n");}	
+	if(NRF_R_DYN_PD->DYN_P3_R)		{printf(SET_FORE_GREEN);		printf("\tEnable dynamic data pipe 3 length\n");}		else {printf(SET_FORE_RED); printf("\tDisable dynamic data pipe 3 length\n");}											/*3*/
+	if(NRF_R_DYN_PD->DYN_P4_R)		{printf(SET_FORE_GREEN);		printf("\tEnable dynamic data pipe 4 length\n");}		else {printf(SET_FORE_RED); printf("\tDisable dynamic data pipe 4 length\n");}	
+	if(NRF_R_DYN_PD->DYN_P5_R)		{printf(SET_FORE_GREEN);		printf("\tEnable dynamic data pipe 5 length\n");}		else {printf(SET_FORE_RED); printf("\tDisable dynamic data pipe 5 length\n");}													/*0*/
+	printf(SET_FORE_WHITE);											/*0*/	/*4*/					/*5*/
+}
+void readFEATURE(void){
+	printf(SET_BACK_YELLOW);
+	printf("%sFEATURE - Feature registers %s\n",SET_FORE_BLACK,SET_BACK_BLACK);printf(SET_FORE_WHITE);
+	if(NRF_R_FEATURE->EN_DYN_ACK_R)		{printf(SET_FORE_GREEN);		printf("\tEnables the W_TX_PAYLOAD_NOACK\n");}		else {printf(SET_FORE_RED); printf("\tDisable the W_TX_PAYLOAD_NOACK\n");}													/*0*/
+	if(NRF_R_FEATURE->EN_ACK_PAY)		{printf(SET_FORE_GREEN);		printf("\tEnable payload with ack\n");}				else {printf(SET_FORE_RED); printf("\tDisable payload with ack\n");}											/*1*/
+	if(NRF_R_FEATURE->EN_DPL)			{printf(SET_FORE_GREEN);		printf("\tEnable dynamic payload length\n");}		else {printf(SET_FORE_RED); printf("\tDisable  dynamic payload length\n");}												/*0*/
+	printf(SET_FORE_WHITE);											/*0*/	/*4*/					/*5*/
+}
 
 void refreshRegsterData(void){
 	nrf24_readAllReg();
@@ -176,7 +273,7 @@ void nrf24_init()
 void nrf24_config(unsigned char channel, unsigned char pay_length)
 {
 	
-	unsigned char register_table[29]={15,12};
+
 #if DEBUG
 	printf("konfiguracja nrf24l10 : kana³: %d, d³ugoœæ strumiena danych = %d bjtów\n",channel,pay_length);
 #endif
@@ -540,26 +637,31 @@ unsigned char nrf24_readSingleRegister(unsigned char reg)
 	return readData;
 }
 void nrf24_readAllReg(unsigned char* table){
-	nrf24_csn_digitalWrite(LOW);
-	spi_Transmit(R_REGISTER | (REGISTER_MASK & 0x00));
+	unsigned char address = 0x00;
+	
 	for(unsigned char i=0;i<0x09;i++){
+		nrf24_csn_digitalWrite(LOW);
+		spi_Transmit(R_REGISTER | (REGISTER_MASK & address++));
 		*(nrf_Registers_table+i) = spi_Transmit(NOP);
+		nrf24_csn_digitalWrite(HIGH);
 	}
-	nrf24_csn_digitalWrite(HIGH);
-	_delay_us(30);
-	nrf24_csn_digitalWrite(LOW);
-	spi_Transmit(R_REGISTER | (REGISTER_MASK & 0x11));
+	
+	address = 0x11;
 	for(unsigned char i=10;i<0x16;i++){
+		nrf24_csn_digitalWrite(LOW);
+		spi_Transmit(R_REGISTER | (REGISTER_MASK & address++));
 		*(nrf_Registers_table+i) = spi_Transmit(NOP);
+		nrf24_csn_digitalWrite(HIGH);
 	}
-	nrf24_csn_digitalWrite(HIGH);
-	_delay_us(30);
-	nrf24_csn_digitalWrite(LOW);
-	spi_Transmit(R_REGISTER | (REGISTER_MASK & 0x1C));
+	
+	address = 0x1C;
 	for(unsigned char i=17;i<0x18;i++){
+		nrf24_csn_digitalWrite(LOW);
+		spi_Transmit(R_REGISTER | (REGISTER_MASK & address++));
 		*(nrf_Registers_table+i) = spi_Transmit(NOP);
+		nrf24_csn_digitalWrite(HIGH);
 	}
-	nrf24_csn_digitalWrite(HIGH);
+	
 }
 
 void nrf24_transferRead(unsigned char* datain,unsigned char len)
@@ -581,4 +683,35 @@ void nrf24_readRegisters(unsigned char reg, unsigned char* val, unsigned char le
 	spi_Transmit(R_REGISTER | (REGISTER_MASK & reg));
 	nrf24_transferRead(val,len); // val
 	nrf24_csn_digitalWrite(HIGH);
+}
+
+void RX_ADDR_P1_tableWrite(void)
+{
+	nrf24_csn_digitalWrite(LOW);
+	spi_Transmit(R_REGISTER | (REGISTER_MASK & RX_ADDR_P1));
+	for(unsigned char i=0;i<5;i++){
+		
+		*(RX_Address_P1+i) = spi_Transmit(NOP);
+	}
+	nrf24_csn_digitalWrite(HIGH);
+}
+
+void RX_ADDR_P0_tableWrite(void){
+	nrf24_csn_digitalWrite(LOW);
+	spi_Transmit(R_REGISTER | (REGISTER_MASK & RX_ADDR_P0));
+	for(unsigned char i=0;i<5;i++){
+		
+		*(RX_Address_P0+i) = spi_Transmit(NOP);
+	}
+	nrf24_csn_digitalWrite(HIGH);
+}
+void RX_ADDR_P2_P5_tableWrite(void){
+	unsigned char address = RX_ADDR_P2;
+	for(unsigned char i=0;i<5;i++){
+		nrf24_csn_digitalWrite(LOW);
+		spi_Transmit(R_REGISTER | (REGISTER_MASK & address++));
+		*(RX_Address_P2_P5+i) = spi_Transmit(NOP);
+		nrf24_csn_digitalWrite(HIGH);
+	}
+	
 }

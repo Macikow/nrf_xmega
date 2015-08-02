@@ -60,6 +60,11 @@ int main(void)
 	readSTATUS( );
 	readOBSERVE_TX( );
 	readRPD( );
+	readRX_ADDR_P0();
+	readRX_ADDR_P1();
+	readRX_ADDR_P2_P5();
+	readDYNPD();
+	readFEATURE();
     while(1)
     {
 		//printf("sdfghjkl");

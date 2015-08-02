@@ -80,7 +80,11 @@ void readOBSERVE_TX(void);
 void readRPD(void);
 
 
-
+void readRX_ADDR_P0(void);
+void readRX_ADDR_P1(void);
+void readRX_ADDR_P2_P5(void);
+void readDYNPD(void);
+void readFEATURE(void);
 
 
 #endif /* NRF24_H_ */
